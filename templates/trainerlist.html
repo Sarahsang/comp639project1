@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %} Search Trainer {% endblock %}
+
+{% block content %}
+<br>
+    {% if member %}
+    <!-- Display trainers for members -->
+    <h2><p class="text-center" style="color: rgb(88, 70, 11); margin-top:50px; ">Trainers</p></h2>
+    <table class="reusableTable" style="width:1200px;margin:40px auto;padding: 20px; height: 80px;">
+        <tr><td>NAME</td><td>QUALIFICATIONS</td><td></td><td></td><td></td></tr>
+        {% for trainer in trainers %}
+        <tr>
+            <td>{{trainer[1]}} {{trainer[2]}}</td>
+            <td>{{trainer[3]}}</td>
+            <td><a href="{{ url_for('clicktrainerprofile_member', id=trainer[0]) }}" class="button-back btn" style="margin-bottom: 5px; margin-top: 5px;" > Profile </a></td>
+            <td>
+              <div class="searchclassbytrainer">
+                <form action="{{ url_for('memberclicksearch_TrainerClass') }}" method="post">
+                    <select hidden id="trainersearch" name="trainersearch" required="required">
+                      <option value="{{trainer[0]}}|string,{{trainer[1]}},{{trainer[2]}}">{{trainer[1]}} {{trainer[2]}}</option>
+                    </select>
+                    <input type="submit" class="button-back btn" value="Timetable" />
+                </form>
+            </td>
+            <td><a href="{{ url_for('memberHome') }}" class="button-back btn"> Home </a></td>
+        </tr>
+      {% endfor %}
+    </table>
+
+    {% elif admin %}
+    <!-- Display trainers for admin -->
+    <h2><p class="text-center" style="color: rgb(88, 70, 11); margin-top:50px; ">Trainers</p></h2>
+    <table class="reusableTable" style="width:1200px;margin:40px auto;padding: 20px; height: 80px;">
+        <tr><td>NAME</td><td>QUALIFICATIONS</td><td>EMAIL</td><td>PHONE</td><td></td><td></td><td></td></tr>
+        {% for trainer in trainers %}
+        <tr>
+            <td>{{trainer[1]}} {{trainer[2]}}</td><td>{{trainer[4]}}</td><td>{{trainer[5]}}</td><td>{{trainer[6]}}</td>
+            <td><a href="{{ url_for('clicktrainerprofile_admin', id=trainer[0]) }}" class="button-back btn" style="margin-bottom: 5px; margin-top: 5px;"> Profile </a></td>
+            <td><a href="{{ url_for('adminHome') }}" class="button-back btn"> Home  </a></td>
+        </tr>
+      {% endfor %}
+    </table>
+    {% endif %}
+{% endblock %}
+

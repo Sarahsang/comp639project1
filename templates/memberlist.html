@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %} Search Member {% endblock %}
+
+{% block content %}
+<!-- add Back button, Reset button and Home button -->
+<div class="back-button">
+<button type = "button" class="button-back btn " onclick="history.back()">Back</button>
+<a href="{{ url_for('clickmember_admin') }}" class="button-back btn"> Reset </a>
+<a href="{{ url_for('adminHome') }}" class="button-back btn"> Home </a>
+</div>
+
+<div class="row member-search">  
+<div class="col-lg-4">
+<!-- If search by member id, a form with POST method will pass data of memberid to /searchmember route-->
+<form action="/searchmember" method="POST">
+    <div class="row g-3">
+        <label class="form-label">Search a member by ID</label>
+        <div class="col">
+            <input type="text" class="form-control me-2" name="memberid" placeholder="Member ID" required>
+        </div>
+        <div class="col">
+            <button type="submit" class="reusableButton">Search</button>
+        </div>
+    </div>
+</form>
+</div>
+<div class="col-lg-4">
+<!-- If search by First Name or Full Name, a form with POST method will pass data of name to /searchmember route-->
+<form action="/searchmember" method="POST">
+    <div class="row g-3">
+        <label class="form-label">Search a member by First Name / Full Name</label>
+        <div class="col">
+            <input type="text" class="form-control me-2" name="name" placeholder="Name" required>
+        </div>
+        <div class="col">
+            <button type="submit" class="reusableButton">Search</button>
+        </div>
+    </div>
+</form>
+</div>
+<div class="col-lg-4">
+    <form action="/admin/addMember">
+        <div class="row g-3">
+            <label class="form-label">Add a New Member</label>
+            <div class="col">
+                <button type="submit" class="reusableButton">Add</button>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+
+<hr>
+<!-- If no search result found, display feedback to users -->
+{% if searchFail %}
+<div class="search-fail">
+  {{searchFail}}
+</div>
+{%endif%}
+
+<!-- add a table to display all members -->
+<table class="table table-memberlist table-sm table-hover table-striped table-bordered">
+    <tr>
+        <th>Profile</th><th>Name</th><th>Phone</th><th>Email</th><th>Adress</th><th>Status</th><th>Change Status</th>
+    </tr>
+{% for mb in memberprofile %}
+    <tr>
+        <td class="member-profile">
+            <a href="/memberprofile?id={{mb[0]}}" role="button">
+                <div class="member-profile">
+                    {% if mb[6] == "Female" %}
+                    <img src="/static/profile-F.png" class="member-profile-image img-fluid" alt="member profile icon">   
+                    {% else %}
+                    <img src="/static/profile-M.png" class="member-profile-image img-fluid" alt="member profile icon">   
+                    {% endif %} 
+                </div>
+            </a>
+        </td>    
+        <td>{{mb[2]}} {{mb[3]}}</td>
+        <td>{{mb[8]}}</td><td>{{mb[4]}}</td><td>{{mb[9]}}</td>
+        
+        {% if mb[10] == 1 %}
+            <td>Active</td>
+        {% elif mb[10] == 0 %}
+            <td>Inactive</td>
+        {% else %}
+            <td>NA</td>
+        {% endif %}
+
+        {% if mb[10] == 1 %}
+            <td>
+                <form action="/admin/changestatus" method="POST">
+                    <button type="submit" name="isactive" value="0" class="reusableButton" style="height:40px; background-color:#a09c9c; ">Deactivate</button>
+                    <input type="hidden" name="id" value="{{mb[0]}}"></input>
+                </form>
+            </td> 
+        {% elif mb[10] == 0 %}
+            <td>
+                <form action="/admin/changestatus" method="POST">
+                    <button type="submit" name="isactive" value="1" class="reusableButton" style="height:40px; background-color:  #D9AD3C; ">activate</button>
+                    <input type="hidden" name="id" value="{{mb[0]}}"></input>
+                </form>
+            </td>   
+        {% else %}
+            <td>NA</td>
+        {% endif %}
+    
+        </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

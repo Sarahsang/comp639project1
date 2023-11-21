@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %} News {% endblock %}
+
+{% block content %}
+
+<!-- Provide a feedback to users after a newsletter been added -->
+{% if addcomplete %}
+<div class="reusableContainer" style="height:150px; width:75%;padding-top: 20px; "> 
+    <div style="height:80px;"> 
+       <h2>{{ addcomplete }}</h2>
+    </div>
+    <!-- add a back button to navigate to newletter report page-->
+    <button type = "button" class="button-back btn " onclick="window.location.href='/admin/reports/newsletter'">Back</button>
+</div>
+
+{% else %}  
+
+<!-- add a form to get user input to edit a newsletter -->
+<form action="/admin/reports/newsletter" method="POST">
+  <div class="newsletter">
+    <h1>Add Newsletter</h1>
+    <label for="title">Title: </label>
+    <!-- Restrict word limit of title to 50, set this field to required-->
+    <input type="text" name="title" minlength="5" maxlength="50" required>
+    <label for="content">Content: </label>
+    <!-- Restrict word limit of content to 350, set this field to required-->
+    <textarea name="content" minlength="10" maxlength="350" required></textarea>
+    <button type="submit" class="reusableButton">Submit</button>
+  </div>
+</form>
+
+{% endif %}
+
+
+<h2 class="text-center" style="color: rgb(88, 70, 11);">Newsletter Reports</h2>
+<!-- add a table to display newsletter reports -->
+<table class="table table-news table-sm table-hover table-striped table-bordered">
+    <tr>
+        <th>Date</th><th>Title</th><th>Content</th><th>Status</th>
+    </tr>
+{% for news in newsletter %}
+    <tr> 
+        <td>{{news[3]}}</td> 
+        <td>{{news[1]}}</td>
+        <td>{{news[2]}}</td>
+
+        {% if news[4] == 1 %}
+            <td style="color: green; font-weight:bold;">Active</td>
+        {% elif news[4] == 0 %}
+            <td>Inactive</td>
+        {% else %}
+            <td>NA</td>
+        {% endif %} 
+    </tr>
+{% endfor %}
+</table>
+
+
+{% endblock %}

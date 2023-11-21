@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %} Trainer Profile {% endblock title %}
+{% block content %}
+<!-- heading of page -->
+<h2>
+    <p class="text-center" style="color: rgb(110, 88, 14); margin-top:50px; ">Trainer Profile</p>
+</h2>
+<!-- if a member is logged in then display the profile card with the option to book a class with the trainer -->
+{% if member %}
+<div class="profile-card card mb-3" style="max-width: 850px;">
+    <div class="row g-8">
+        <div class="profile-info col-md-4">
+            {% if trainerprofile[0]== 1 %}
+            <img src="\static\hido_dai.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 2 %}
+            <img src="\static\pen_sole.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 3 %}
+            <img src="\static\amy_ferguson.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 7 %}
+            <img src="\static\jack_oswald.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 10 %}
+            <img src="\static\tomcruise.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% else %}
+            <img src="\static\Trainer Illustration-small.png" class="profile-image img-fluid"
+                alt="trainer profile icon">
+            {% endif %}
+
+        </div>
+
+        <div class="Qualifications-info col-md-8" style="padding: 20px;">
+            <h3 class="card-title" style="color: rgb(110, 88, 14);">{{trainerprofile[1]}} {{trainerprofile[2]}}</h3>
+            <p class="card-text">Qualification: {{trainerprofile[3]}}</p>
+            <p class="card-text">Qualification Detail: {{trainerprofile[4]}}</p>
+            <p class="card-text">Email: {{trainerprofile[5]}}</p>
+            <p class="card-text">Phone: {{trainerprofile[6]}}</p>
+            <a style="display: inline-block;" href="{{ url_for('clicktrainer_member') }}" class="button-back btn">Back</a>
+            <form style="display: inline-block;" action="{{ url_for('memberclicksearch_TrainerClass') }}" method="post">
+                <select hidden id="trainersearch" name="trainersearch" required="required">
+                    <option value="{{trainerprofile[0]}}|string,{{trainerprofile[1]}},{{trainerprofile[2]}}">
+                        {{trainerprofile[1]}} {{trainerprofile[2]}}</option>
+                </select>
+                <input type="submit" class="button-back btn" value="Book" />
+            </form>
+        </div>
+    </div>
+</div>
+<!-- if admin is logged in then display the profile card with the option to only view the trainer profile -->
+{% elif admin %}
+<div class="profile-card card mb-3" style="max-width: 850px;">
+    <div class="row g-8">
+        <div class="profile-info col-md-4">
+            {% if trainerprofile[0]== 1 %}
+            <img src="\static\hido_dai.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 2 %}
+            <img src="\static\pen_sole.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 3 %}
+            <img src="\static\amy_ferguson.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 7 %}
+            <img src="\static\jack_oswald.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 10 %}
+            <img src="\static\tomcruise.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% else %}
+            <img src="\static\Trainer Illustration-small.png" class="profile-image img-fluid"
+                alt="trainer profile icon">
+            {% endif %}
+        </div>
+
+        <div class="Qualifications-info col-md-8" style="padding: 20px;">
+            <h3 class="card-title" style="color: rgb(110, 88, 14);">{{trainerprofile[1]}} {{trainerprofile[2]}}</h3>
+            <p class="card-text">Qualification: {{trainerprofile[3]}}</p>
+            <p class="card-text">Qualification Detail: {{trainerprofile[4]}}</p>
+            <p class="card-text">Email: {{trainerprofile[5]}}</p>
+            <p class="card-text">Phone: {{trainerprofile[6]}}</p>
+            <a href="{{ url_for('clicktrainer_admin') }}" class="button-back btn"> Back </a>
+        </div>
+    </div>
+</div>
+<!-- if the trainer is logged in then display the profile card with the option to edit their own profile -->
+{% elif trainer %}
+<div class="profile-card card mb-3" style="max-width: 850px;">
+    <div class="row g-8">
+        <div class="profile-info col-md-4">
+            {% if trainerprofile[0]== 1 %}
+            <img src="\static\hido_dai.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 2 %}
+            <img src="\static\pen_sole.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 3 %}
+            <img src="\static\amy_ferguson.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 7 %}
+            <img src="\static\jack_oswald.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% elif trainerprofile[0]== 10 %}
+            <img src="\static\tomcruise.jpg" class="profile-image img-fluid" alt="trainer profile photo">
+            {% else %}
+            <img src="\static\Trainer Illustration-small.png" class="profile-image img-fluid"
+                alt="trainer profile icon">
+            {% endif %}
+        </div>
+
+        <div class="Qualifications-info col-md-8" style="padding: 20px;">
+            <h3 class="card-title" style="color: rgb(110, 88, 14);">{{trainerprofile[1]}} {{trainerprofile[2]}}</h3>
+            <p class="card-text">Qualification: {{trainerprofile[3]}}</p>
+            <p class="card-text">Qualification Detail: {{trainerprofile[4]}}</p>
+            <p class="card-text">Email: {{trainerprofile[5]}}</p>
+            <p class="card-text">Phone: {{trainerprofile[6]}}</p>
+            <a href="{{ url_for('trainer_edit_trainerprofile', id=trainerprofile[0]) }}" class="button-back btn"> Edit
+            </a>
+            <a href="{{ url_for('trainerHome') }}" class="button-back btn"> Home </a>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+{% endblock content %}

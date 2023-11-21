@@ -1,0 +1,646 @@
+{% extends "base.html" %}
+{% block title %} Timetable {% endblock %}
+
+{% block content %}
+    <head>
+    <!-- Add background color to the body -->
+    <style>
+        body {
+        background-color: #f2f2f2;
+    }
+    </style>
+
+    </head>
+
+    <body>
+        <!-- Add logo container -->
+        <div hidden class="logo-container">
+            <img class="logo" src="/static/logo.svg" alt="Logo">
+        </div>
+
+        <!-- Add table responsive shadow -->
+        <div class="table-responsive shadow p-3 mb-5 bg-white rounded">
+            <div class="row justify-content-md-center">
+                
+                <!-- Add filter buttons for class and session -->
+                <div class="btncontainer" id="myBtnContainer">
+                    <button class="btn btn-classlist active" onclick="filterSelection('all')"> Show all</button>
+                    <button class="btn btn-classlist" onclick="filterSelection('current-week')"> Current Week </button>
+                    <button class="btn btn-classlist" onclick="filterSelection('next-week')"> Next Week </button>
+                    <button class="btn btn-classlist" onclick="filterSelection('following-week')"> Following Week </button>
+                </div>
+                <br><br><br>
+                <div class="btncontainer" id="ClassFilterBtnContainer">
+                    <button id="filterbtn_all" class="classfilterbtn active" onclick="" hidden> Show all </button>
+                    <button id="filterbtn_class" class="classfilterbtn active" onclick="class_toggle();"> Class </button>
+                    <button id="filterbtn_session" class="classfilterbtn active" onclick="session_toggle();"> Session </button>
+                </div>
+                <br><br><br>
+
+                <!-- Search Trainer Name dropdown select -->
+                {% if "/timetable" in request.url %}
+                <div class="searchclassbytrainer" style="text-align: center;"></div>
+                    {% if "member" in request.url %}
+                        <form style="text-align: center;" action="{{ url_for('memberclicksearch_TrainerClass') }}" method="post">
+                    {% elif "admin" in request.url %}
+                        <form style="text-align: center;" action="{{ url_for('adminclicksearch_TrainerClass') }}" method="post">
+                    {% elif "trainer" in request.url %}
+                        <form style="text-align: center;" action="{{ url_for('trainerclicksearch_TrainerClass') }}" method="post">
+                    {% endif %}
+                        <label>Search by Trainer</label>
+                        <select id="trainersearch" name="trainersearch" required="required">
+                            <option value="" selected disabled hidden>Choose here</option>
+                            {% for trainer in trainer_list %}
+                                <option value="{{trainer[0]}}|string,{{trainer[1]}},{{trainer[2]}}">{{trainer[1]}} {{trainer[2]}}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="submit" class="btn btn-sm" value="Search" />
+                    </form>
+                    <br>
+                    {% if "/timetable/trainer" in request.url %}
+                        {% if "member" in request.url %}
+                            {% if "uid" not in request.url %}
+                                {{message}} <button class="btn btn-sm" onclick="window.location.href='/member/timetable';">Reset</button>
+                            {% endif %}
+                        {% elif "admin" in request.url %}
+                            {{message}} <button class="btn btn-sm" onclick="window.location.href='/admin/timetable';">Reset</button>
+                        {% elif "trainer" in request.url %}
+                            {{message}} <button class="btn btn-sm" onclick="window.location.href='/trainer/timetable';">Reset</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                {% endif %}
+
+       
+                <!-- Display schedule on table -->
+                {% set weekschedule = (('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'),('Monday','Tuesday','Wednesday','Thursday','Friday'), ('Monday','Tuesday','Wednesday','Thursday','Friday')) %}
+
+                <!-- Booking message to be display. In default, id "bookingmessage" is hidden-->
+                <br>
+                {% if "member" in request.url %}
+                    <div class="bookingmessage" id="bookingmessage">
+                        {{bookingmessage}}
+                    </div>
+                {% endif %}
+
+                <!-- To display current week time table -->
+                <div class="filterDiv current-week">
+                    <div style="text-align: center;">
+                        <label style="font-size: 40px; font-weight: bold; color: #315fd4;">Current Week</label>
+                    </div>
+                    <br>
+                    <table class="table table-hover">
+                        <tr><th></th><th>Monday {{currentweek[0].strftime('%d-%m')}}</th><th>Tuesday {{currentweek[1].strftime('%d-%m')}}</th><th>Wednesday {{currentweek[2].strftime('%d-%m')}}</th><th>Thursday {{currentweek[3].strftime('%d-%m')}}</th><th>Friday {{currentweek[4].strftime('%d-%m')}}</th></tr>
+                        {% for hour in weekschedule %}
+                            {% set time = loop.index+5 %}
+
+                            {% if time in timelist_cw%}
+                                <tr>
+                            {% else %}
+                                <tr hidden>
+                            {% endif %}
+                            
+                            {% if time < 12 %}
+                            <td style="width: 10%;">{{time}}:00 AM</td>
+                            {% elif time == 12 %}
+                                <td>{{time}}:00 PM</td>
+                            {% else %}
+                                <td>{{time-12}}:00 PM</td>
+                            {% endif %}
+
+                            {% for day in hour %}
+                                <td style="width: 18%;">
+                                {% for class in classes %}
+                                    {% if class[3] == day %}
+                                        {% set classtimestr=class[14]|string%}
+                                        {% set classtime = classtimestr.split(':') %}
+                                        {% if classtime[0] == time|string %}
+                                        <div class="timetable-item">
+                                            {% if class[9] == 1 %}
+                                            {% set type = 'Session' %}
+                                                <div class="sessions">
+                                                <div class="sessionstopic">Private Session</div>
+                                            {% elif class[9]>1 %}
+                                                {% set type = 'Class' %}
+                                                <div class="classes">
+                                                <div class="classestopic">{{class[7]}}</div>
+                                            {% endif %}
+
+                                            {% if "member" in request.url %}
+                                                <div class="trainer"><a href="/member/trainer_profile?id={{class[2]}}">{{class[10]}} {{class[11]}}</a></div>
+                                            {% elif "trainer" in request.url %}
+                                                <div class="trainer"><a href="/trainer/trainer_profile?id={{class[2]}}">{{class[10]}} {{class[11]}}</a></div>
+                                            {% elif "admin" in request.url %}
+                                                <div class="trainer"><a href="/admin/trainer_profile?id={{class[2]}}">{{class[10]}} {{class[11]}}</a></div>
+                                            {% endif %}
+                                                {{class[12]}}/{{class[9]}} 
+                                                {% if class[9] == 1 %}
+                                                    participant        
+                                                {% elif class[9]>1 %}   
+                                                    participants 
+                                                {% endif %}            
+                                                {% if user[1] == 'Member' %}
+                                                    {% if (class[0],) not in bookedschedule %}
+                                                        {% if class[12] == class[9] %}
+                                                            <label>Fully Booked</label>
+                                                        {% else %}
+                                                            {% if user[10] %}
+                                                                <br>
+                                                                {% if class[9]>1 %}
+                                                                    <button class="smallbtn" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&bookclass=1';">Book</button>
+                                                                {% elif class[9]==1 %}
+                                                                    <button class="smallbtn" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&pay=';">Book</button>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <label>Booked</label>
+                                                        <br>
+                                                        {% if class[9]>1 %}
+                                                            <button class="smallbtn_c" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&confirm=0&type=2';">Cancel</button>
+                                                        {% elif class[9]==1 %}
+                                                            <button class="smallbtn_c" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&confirm=0&type=1';">Cancel</button>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% elif user[1] == 'Trainer' %}
+                                                    {% if class[13] == '1/1' %}
+                                                        <label>Fully Booked</label>
+                                                    {% elif class[13] == '30/30' %}
+                                                        <label>Fully Booked</label>
+                                                    {% endif %}
+
+                                                    {% if "mytimetable" in request.url and class[13] != '0/1' and class[13] != '0/30'%}
+                                                        <br>
+                                                        <form action="{{ url_for('view_detail', class_id=class[0]) }}" method="GET">
+                                                            <input type="hidden" name="class_id" value="{{class[0]}}">
+                                                            <button class="smallbtn" onclick="">View Detail</button>
+                                                        </form>
+                                                    {% endif %}
+
+                                                {% endif %}
+                                            </div>
+                                        </div> 
+                                        {% else %}
+                                        {% endif %}
+                                    {% else %}
+                                    {% endif %}
+                                {% endfor %}
+                                </td>
+                            {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table> 
+                </div>
+                            
+                <!-- To display next time table -->
+                <div class="filterDiv next-week">
+                    <div style="text-align: center;">
+                        <label style="font-size: 30px; font-weight: bold; color: #5cbd8a;">Next Week</label>
+                    </div>
+                    <br>
+                    <table class="table table-hover">
+                        <tr><th></th><th>Monday {{nextweek[0].strftime('%d-%m')}}</th><th>Tuesday {{nextweek[1].strftime('%d-%m')}}</th><th>Wednesday {{nextweek[2].strftime('%d-%m')}}</th><th>Thursday {{nextweek[3].strftime('%d-%m')}}</th><th>Friday {{nextweek[4].strftime('%d-%m')}}</th></tr>
+                        {% for hour in weekschedule %}
+                            {% set time = loop.index+5 %}
+                            
+                            {% if time in timelist_nw %}
+                                <tr>
+                            {% else %}
+                                <tr hidden>
+                            {% endif %}
+                            
+                            {% if time < 12 %}
+                                <td style="width: 10%;">{{time}}:00 AM</td>
+                            {% elif time == 12 %}
+                                <td>{{time}}:00 PM</td>
+                            {% else %}
+                                <td>{{time-12}}:00 PM</td>
+                            {% endif %}
+
+                            {% for day in hour %}
+                                <td style="width: 18%;">
+                                {% for class in classes_nw %}
+                                    {% if class[3] == day %}
+                                        {% set classtimestr=class[14]|string%}
+                                        {% set classtime = classtimestr.split(':') %}
+                                        {% if classtime[0] == time|string %}
+                                        <div class="timetable-item">
+                                                {% if class[9] == 1 %}
+                                                {% set type = 'Session' %}
+                                                    <div class="sessions">
+                                                    <div class="sessionstopic">Private Session</div>
+                                                {% elif class[9]>1 %}
+                                                    {% set type = 'Class' %}
+                                                    <div class="classes">
+                                                    <div class="classestopic">{{class[7]}}</div>
+                                                {% endif %}
+                                                {% if "member" in request.url %}
+                                                    <div class="trainer"><a href="/member/trainer_profile?id={{class[2]}}">{{class[10]}} {{class[11]}}</a></div>
+                                                {% elif "trainer" in request.url %}
+                                                    <div class="trainer"><a href="/trainer/trainer_profile?id={{class[2]}}">{{class[10]}} {{class[11]}}</a></div>
+                                                {% elif "admin" in request.url %}
+                                                    <div class="trainer"><a href="/admin/trainer_profile?id={{class[2]}}">{{class[10]}} {{class[11]}}</a></div>
+                                                {% endif %}
+                                                {{class[12]}}/{{class[9]}}
+                                                {% if class[9] == 1 %}
+                                                    participant        
+                                                {% elif class[9]>1 %}   
+                                                    participants 
+                                                {% endif %}            
+                                                {% if user[1] == 'Member' %}
+                                                    {% if (class[0],) not in bookedschedule %}
+                                                        {% if class[12] == class[9] %}
+                                                        <label>Fully Booked</label>
+                                                        {% else %}
+                                                            {% if user[10] %}
+                                                            <br>
+                                                                {% if class[9]>1 %}
+                                                                    <button class="smallbtn" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&bookclass=1';">Book</button>
+                                                                {% elif class[9]==1 %}
+                                                                    <button class="smallbtn" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&pay=';">Book</button>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <label>Booked</label>
+                                                        <br>
+                                                        {% if class[9]>1 %}
+                                                            <button class="smallbtn_c" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&confirm=0&type=2';">Cancel</button>
+                                                        {% elif class[9]==1 %}
+                                                            <button class="smallbtn_c" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&confirm=0&type=1';">Cancel</button>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% elif user[1] == 'Trainer' %}
+                                                    {% if class[13] == '1/1' %}
+                                                        <label>Fully Booked</label>
+                                                    {% elif class[13] == '30/30' %}
+                                                        <label>Fully Booked</label>
+                                                    {% endif %}
+
+                                                    {% if "mytimetable" in request.url and class[13] != '0/1' and class[13] != '0/30'%}
+                                                        <br>
+                                                        <form action="{{ url_for('view_detail', class_id=class[0]) }}" method="GET">
+                                                            <input type="hidden" name="class_id" value="{{class[0]}}">
+                                                            <button class="smallbtn" onclick="">View Detail</button>
+                                                        </form>
+                                                    {% endif %}
+
+                                                {% endif %}
+                                                </div>
+                                        </div> 
+                                        {% else %}
+                                        {% endif %}
+                                    {% else %}
+                                    {% endif %}
+                                {% endfor %}
+                                </td>
+                            {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table> 
+                </div>
+
+                <!-- To display following week time table -->
+                <div class="filterDiv following-week">
+                    <div style="text-align: center;">
+                        <label style="font-size: 30px; font-weight: bold; color: #5cbd8a;">Following Week</label>
+                    </div>
+                    <br>
+                    <table class="table table-hover">
+                        <tr><th></th><th>Monday {{nextnextweek[0].strftime('%d-%m')}}</th><th>Tuesday {{nextnextweek[1].strftime('%d-%m')}}</th><th>Wednesday {{nextnextweek[2].strftime('%d-%m')}}</th><th>Thursday {{nextnextweek[3].strftime('%d-%m')}}</th><th>Friday {{nextnextweek[4].strftime('%d-%m')}}</th></tr>
+                        {% for hour in weekschedule %}
+                            {% set time = loop.index+5 %}
+                            
+                            {% if time in timelist_nnw %}
+                                <tr>
+                            {% else %}
+                                <tr hidden>
+                            {% endif %}
+
+                            {% if time < 12 %}
+                                <td style="width: 10%;">{{time}}:00 AM</td>
+                            {% elif time == 12 %}
+                                <td>{{time}}:00 PM</td>
+                            {% else %}
+                                <td>{{time-12}}:00 PM</td>
+                            {% endif %}
+
+                            {% for day in hour %}
+                                <td style="width: 18%;">
+                                {% for class in classes_nnw %}
+                                    {% if class[3] == day %}
+                                        {% set classtimestr=class[14]|string%}
+                                        {% set classtime = classtimestr.split(':') %}
+                                        {% if classtime[0] == time|string %}
+                                        <div class="timetable-item">
+                                                {% if class[9] == 1 %}
+                                                {% set type = 'Session' %}
+                                                    <div class="sessions">
+                                                    <div class="sessionstopic">Private Session</div>
+                                                {% elif class[9]>1 %}
+                                                    {% set type = 'Class' %}
+                                                    <div class="classes">
+                                                    <div class="classestopic">{{class[7]}}</div>
+                                                {% endif %}
+                                                {% if "member" in request.url %}
+                                                    <div class="trainer"><a href="/member/trainer_profile?id={{class[2]}}">{{class[10]}} {{class[11]}}</a></div>
+                                                {% elif "trainer" in request.url %}
+                                                    <div class="trainer"><a href="/trainer/trainer_profile?id={{class[2]}}">{{class[10]}} {{class[11]}}</a></div>
+                                                {% elif "admin" in request.url %}
+                                                    <div class="trainer"><a href="/admin/trainer_profile?id={{class[2]}}">{{class[10]}} {{class[11]}}</a></div>
+                                                {% endif %}
+                                                {{class[12]}}/{{class[9]}}
+                                                {% if class[9] == 1 %}
+                                                    participant        
+                                                {% elif class[9]>1 %}   
+                                                    participants 
+                                                {% endif %}          
+                                                {% if user[1] == 'Member' %}
+                                                    {% if (class[0],) not in bookedschedule %}
+                                                        {% if class[12] == class[9] %}
+                                                        <label>Fully Booked</label>
+                                                        {% else %}
+                                                            {% if user[10] %}
+                                                            <br>
+                                                                {% if class[9]>1 %}
+                                                                    <button class="smallbtn" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&bookclass=1';">Book</button>
+                                                                {% elif class[9]==1 %}
+                                                                    <button class="smallbtn" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&pay=';">Book</button>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <label>Booked</label>
+                                                        <br>
+                                                        {% if class[9]>1 %}
+                                                            <button class="smallbtn_c" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&confirm=0&type=2';">Cancel</button>
+                                                        {% elif class[9]==1 %}
+                                                            <button class="smallbtn_c" onclick="window.location.href='?uid={{member[0]}}&sid={{class[0]}}&confirm=0&type=1';">Cancel</button>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% elif user[1] == 'Trainer' %}
+                                                    {% if class[13] == '1/1' %}
+                                                        <label>Fully Booked</label>
+                                                    {% elif class[13] == '30/30' %}
+                                                        <label>Fully Booked</label>
+                                                    {% endif %}
+
+                                                    {% if "mytimetable" in request.url and class[13] != '0/1' and class[13] != '0/30'%}
+                                                        <br>
+                                                        <form action="{{ url_for('view_detail', class_id=class[0]) }}" method="GET">
+                                                            <input type="hidden" name="class_id" value="{{class[0]}}">
+                                                            <button class="smallbtn" onclick="">View Detail</button>
+                                                        </form>
+                                                    {% endif %}
+
+                                                {% endif %}
+                                            </div>
+                                        </div> 
+                                        {% else %}
+                                        {% endif %}
+                                    {% else %}
+                                    {% endif %}
+                                {% endfor %}
+                                </td>
+                            {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table> 
+                </div>
+      
+        <!-- The overlay message and buttons for cancel reservation -->
+        {% if "confirm" in request.url %}
+            {% if "action" not in request.url %}
+                <div class="overlay" id="overlay_cancel" style="display: block;">
+                    <div id="text">Are you sure to cancel? <br>
+                        <div class="overlaybuttoncontainer">
+                            {% if "type=1" in request.url %}
+                                <button class="overlaybutton" onclick="off_cancel(); addQueryParam_cancel_refund();" id="overlay_cancel_yes">Yes. Refund.</button>
+                            {% elif "type=2" in request.url %}
+                                <button class="overlaybutton" onclick="off_cancel(); addQueryParam_cancel();" id="overlay_cancel_yes">Yes. Cancel.</button>
+                            {% endif %} 
+                            <button class="overlaybutton" onclick="off_cancel();">Back</button>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        <!-- The overlay message and buttons for booking reservation for session -->
+        {% if "pay" in request.url %}
+            {% if "action" not in request.url %}
+                <div class="overlay" id="overlay_pay" style="display: block;">
+                    <div id="text">See you in Session.
+                        <div class="overlaybuttoncontainer">
+                            <button class="overlaybutton" onclick="off_pay(); addQueryParam_pay();" id="overlay_pay_book">Pay to Book</button>
+                            <button class="overlaybutton" onclick="off_pay();">Back</button>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        <!-- The overlay message and buttons for booking reservation for class -->
+        {% if "bookclass" in request.url %}
+            {% if "action" not in request.url %}
+                <div class="overlay" id="overlay_bookclass" style="display: block;">
+                    <div id="text">See you in Class.
+                        <div class="overlaybuttoncontainer">
+                            <button class="overlaybutton" onclick="off_bookclass(); addQueryParam_bookclass();" id="overlay_bookclass">Book</button>
+                            <button class="overlaybutton" onclick="off_bookclass();">Back</button>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <script>
+            filterSelection("all")
+            function filterSelection(c) {
+            var x, i;
+            x = document.getElementsByClassName("filterDiv");
+            if (c == "all") c = "";
+            // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
+            for (i = 0; i < x.length; i++) {
+                w3RemoveClass(x[i], "show");
+                if (x[i].className.indexOf(c) > -1) {
+                    w3AddClass(x[i], "show");
+                }
+            }
+            }
+        
+            // Show filtered elements
+            function w3AddClass(element, name) {
+            var i, arr1, arr2;
+            arr1 = element.className.split(" ");
+            arr2 = name.split(" ");
+            for (i = 0; i < arr2.length; i++) {
+                if (arr1.indexOf(arr2[i]) == -1) {
+                element.className += " " + arr2[i];
+                }
+            }
+            }
+        
+            // Hide elements that are not selected
+            function w3RemoveClass(element, name) {
+            var i, arr1, arr2;
+            arr1 = element.className.split(" ");
+            arr2 = name.split(" ");
+            for (i = 0; i < arr2.length; i++) {
+                while (arr1.indexOf(arr2[i]) > -1) {
+                arr1.splice(arr1.indexOf(arr2[i]), 1); 
+                }
+            }
+            element.className = arr1.join(" ");
+            }
+        
+            // Add active class to the current control button (highlight it)
+            var btnContainer = document.getElementById("myBtnContainer");
+            var btns = btnContainer.getElementsByClassName("btn");
+            for (var i = 0; i < btns.length; i++) {
+            btns[i].addEventListener("click", function() {
+                var current = document.getElementsByClassName("active");
+                current[0].className = current[0].className.replace(" active", "");
+                this.className += " active";
+            });
+            }
+
+            // To display the overlay for cancel reservation when click "cancel" button
+            var btns_cancel = document.getElementsByClassName("smallbtn_c");
+            for (var i = 0; i < btns_cancel.length; i++) {
+                btns_cancel[i].addEventListener("click", function() {
+                    document.getElementsById("overlay_cancel_yes").onclick = "off_cancel()"
+                    alert(btns_cancel.length)
+            });
+            }
+
+            //To complete the url for cancelling reservaton. Action 0 in app.py is the signal to run the query for cancelling the reservation.
+            function addQueryParam_cancel() {
+                var url = window.location.href; // get the current URL
+                if (url.indexOf('?') === -1) { // check if there are no query parameters
+                    url += '?action=0'; // add the query parameter
+                } else {
+                    url += '&action=0'; // add the query parameter after the existing ones
+                }
+                window.location.href = url; // redirect to the modified URL
+            }
+
+            //To complete the url for cancelling reservaton. Action 0 in app.py is the signal to run the queries for cancelling the reservation. refund 1 is for refund query.
+            function addQueryParam_cancel_refund() {
+            var url = window.location.href; // get the current URL
+            if (url.indexOf('?') === -1) { // check if there are no query parameters
+                url += '?action=0&refund=1'; // add the query parameter
+            } else {
+                url += '&action=0&refund=1'; // add the query parameter after the existing ones
+            }
+            window.location.href = url; // redirect to the modified URL
+            }
+            
+            //To complete the url for making reservaton. Action 1 in app.py is the signal to run the queries for booking the reservation. The 1 is for the payment.
+            function addQueryParam_pay() {
+                var url = window.location.href; // get the current URL
+                if (url.indexOf('?') === -1) { // check if there are no query parameters. This statement would always be false.
+                    url += '1&action=1'; // add the query parameter. 
+                } else {
+                    url += '1&action=1'; // add the query parameter after the existing ones
+                }
+                window.location.href = url; // redirect to the modified URL
+            }
+
+            //To complete the url for making reservaton. Action 1 in app.py is the signal to run the queries for booking the reservation.
+            function addQueryParam_bookclass() {
+            var url = window.location.href; // get the current URL
+            if (url.indexOf('?') === -1) { // check if there are no query parameters
+                url += '?action=1'; // add the query parameter
+            } else {
+                url += '&action=1'; // add the query parameter after the existing ones
+            }
+            window.location.href = url; // redirect to the modified URL
+            }
+
+            //When click on filter button class, if all the element of "classes" are showing, set to none; if they are hidden, set to show. And also togger to add or remove the active atrribute to the filter button.
+            function class_toggle() {
+            var class_toggle = document.getElementsByClassName("classes");
+                if (class_toggle[0].style.display=="none"){
+                    var class_off = document.getElementsByClassName("classes");
+                    for (var i=0; i<class_off.length; i++){
+                        class_off[i].style.display = "block";
+                    }
+                    document.getElementById("filterbtn_class").className += " active";
+                }
+                else {
+                    var class_on = document.getElementsByClassName("classes");
+                    for (var i=0; i<class_on.length; i++){
+                        class_on[i].style.display = "none";
+                    }
+                    document.getElementById("filterbtn_class").className = document.getElementById("filterbtn_class").className.replace(" active","");
+                }
+            }
+
+            //When click on filter button class, if all the element of "sessions" are showing, set to none; if they are hidden, set to show. And also togger to add or remove the active atrribute to the filter button.
+            function session_toggle() {
+                var session_toggle = document.getElementsByClassName("sessions");
+                if (session_toggle[0].style.display=="none"){
+                    var session_off = document.getElementsByClassName("sessions");
+                    for (var i=0; i<session_off.length; i++){
+                        session_off[i].style.display = "block";
+                    }
+                    document.getElementById("filterbtn_session").className += " active";
+                }
+                else {
+                    var session_on = document.getElementsByClassName("sessions");
+                    for (var i=0; i<session_on.length; i++){
+                        session_on[i].style.display = "none";
+                    }
+                    document.getElementById("filterbtn_session").className = document.getElementById("filterbtn_session").className.replace(" active","");
+                }
+            }
+
+            //Turn on overlay
+            function on() {
+            document.getElementById("overlay").style.display = "block";
+            }
+
+            //Turn off overlay
+            function off() {
+            document.getElementById("overlay").style.display = "none";
+            }
+
+            //Turn on overlay            
+            function on_cancel() {
+            document.getElementById("overlay_cancel").style.display = "block";
+            }
+
+            //Turn off overlay
+            function off_cancel() {
+            document.getElementById("overlay_cancel").style.display = "none";
+            }
+
+            //Turn on overlay  
+            function on_pay() {
+            document.getElementById("overlay_pay").style.display = "block";
+            }
+
+            //Turn off overlay
+            function off_pay() {
+            document.getElementById("overlay_pay").style.display = "none";
+            }
+
+            //Turn on overlay  
+            function on_bookclass() {
+            document.getElementById("overlay_bookclass").style.display = "block";
+            }
+
+            //Turn off overlay
+            function off_bookclass() {
+            document.getElementById("overlay_bookclass").style.display = "none";
+            }
+
+            //bookingmessage will be hidden in 5 seconds.
+            setTimeout(function() {document.getElementById("bookingmessage").style.display="none";
+            }, 5000);
+
+        </script>
+
+    </body>
+{% endblock%}

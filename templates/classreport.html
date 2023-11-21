@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %} Class Report {% endblock %}
+
+{% block content %}
+
+
+    <h1 class="text-center" style="color: rgb(88, 70, 11); margin-top: 50px;">Classes</h1>
+    <p class="text-center" style="color: rgb(88, 70, 11); margin-top: 50px;">Most popular individual class in the last three weeks</p>
+
+<table class="reusableTable" style="width:900px;margin:40px auto;padding: 20px;">
+<tr>
+    <td>NAME</td>
+    <td>DAY</td>
+    <td>DATE/TIME</td>
+    <td>TRAINER</td>
+    <td>ATTENDANCE</td>
+</tr>
+{% for c in classreport %}
+<tr>
+    <td>{{c[1]}}</td>
+    <td>{{c[2]}}</td>
+    <td>{{c[3].strftime("%d %B, %Y, %I:%M:%S")}}</td>
+    <td>{{c[4]}}</td>
+    <td>{{c[5]}}</td>
+
+</tr>
+{% endfor %}
+</table>
+
+
+{% endblock %}
+

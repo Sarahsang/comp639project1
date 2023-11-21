@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %} Payments Report {% endblock %}
+
+{% block content %}
+
+<div style="text-align: center; margin: 50px;">
+    <form  action="/admin/reports/payments" method="GET">
+      <!-- users to choose a time period -->
+    <div id="myCheckbox">
+          <label  class="check">
+            <input  id="checkbox1" name="timePeriod" value="2" type="checkbox" >
+            <span  >Last two weeks</span>
+          </label>
+          <label class="check" >
+            <input id="checkbox2" name="timePeriod" value="4" type="checkbox" >
+            <span >Last four weeks</span>
+          </label>
+
+          <label class="check" >
+            <input id="checkbox3" name="timePeriod" value="8" type="checkbox" >
+            <span >Last Two Months</span>
+          </label> <br>
+        
+        <hr>
+    </div>
+         <!-- user to choose a payment type-->
+        <button type="submit" name="all" value="all" class="reusableButton" id="myButton" style="height:50px; width:100px;">All</button>
+        <button type="submit" name="monthlyPayment" value="monthlyPayment" class="reusableButton" style="height:50px; width:250px; ">Monthly Subscription</button>
+        <button type="submit" name="sessionPayment"  value="sessionPayment" class="reusableButton" style="height:50px; width:250px; ">Session Payments</button>
+        <button type="submit" name="refundSession"  value="refundSession" class="reusableButton" style="height:50px; width:250px; ">refund </button>
+    </form>
+</div>
+<h2>
+  <p class="text-center" style="color: rgb(88, 70, 11);">Payments</p>
+</h2>
+{%if allPaymentReport%}
+<table class="reusableTable" style="width:900px;margin:40px auto;padding: 20px;">
+    <tr><td>ID</td><td>Name</td><td>Amount</td><td>Payment For</td><td>Date</td><tr>
+    {% for payment in allPaymentReport %}
+    <tr>
+        <td>{{payment[0]}}</td>
+        <td>{{payment[1]}} {{payment[2]}}</td>
+        <!-- for refund, a minus symbol is needed-->
+        {%if payment[6]==6%}
+            <td>$ {{payment[3]}}</td>
+        {%else%}
+            <td>$ {{payment[3]}}</td>
+        {%endif%}
+        <!-- display payment type -->
+        {%if payment[6]==6%}
+        <td>session refund</td>
+        {%elif payment[6]==3%}
+        <td>Monthly Subscription</td>
+        {%elif payment[6]==4%}
+        <td>Session</td>
+        {%endif%}
+        {%if payment[5] is none%}
+        <td>{{payment[5]}}</td>
+        {%else%}
+        <td>{{payment[5].strftime("%d %B, %Y")}}</td>
+        {%endif%}
+    </tr>
+{% endfor %}
+</table>
+
+{%elif refundSession%}
+<table class="reusableTable" style="width:900px;margin:40px auto;">
+    <tr><td>ID</td><td>Name</td><td>Amount</td><td>Payment For</td><td>Date</td><tr>
+    {% for payment in refundSession %}
+    <tr>
+        <td>{{payment[0]}}</td>
+        <td>{{payment[1]}} {{payment[2]}}</td><td>$ {{payment[3]}}</td>
+        {%if payment[6]==6%}
+        <td>session refund</td>
+        {%elif payment[6]==3%}
+        <td>Monthly Subscription</td>
+        {%elif payment[6]==4%}
+        <td>Session</td>
+        {%endif%}
+        {%if payment[5] is none%}
+        <td>{{payment[5]}}</td>
+        {%else%}
+        <td>{{payment[5].strftime("%d %B, %Y")}}</td>
+        {%endif%}
+    </tr>
+        
+    </tr>
+{% endfor %}
+</table>
+{%elif monthlyPayment%}
+<table class="reusableTable" style="width:900px;margin:40px auto;">
+    <tr><td>ID</td><td>Name</td><td>Amount</td><td>Payment For</td><td>Date</td><tr>
+    {% for payment in monthlyPayment %}
+    <tr>
+        <td>{{payment[0]}}</td>
+        <td>{{payment[1]}}{{payment[2]}}</td><td>$ {{payment[3]}}</td>
+        {%if payment[6]==6%}
+        <td>session refund</td>
+        {%elif payment[6]==3%}
+        <td>Monthly Subscription</td>
+        {%elif payment[6]==4%}
+        <td>Session</td>
+        {%endif%}
+        {%if payment[5] is none%}
+        <td>{{payment[5]}}</td>
+        {%else%}
+        <td>{{payment[5].strftime("%d %B, %Y")}}</td>
+        {%endif%}
+    </tr>
+        
+    </tr>
+{% endfor %}
+</table>
+
+
+{%elif sessionPayment %}
+<table class="reusableTable" style="width:900px;margin:40px auto;">
+    <tr><td>ID</td><td>Name</td><td>Amount</td><td>Payment For</td><td>Date</td><tr>
+    {% for payment in sessionPayment %}
+    <tr>
+        <td>{{payment[0]}}</td>
+        <td>{{payment[1]}}{{payment[2]}}</td><td>$ {{payment[3]}}</td>
+        {%if payment[6]==6%}
+        <td>session refund</td>
+        {%elif payment[6]==3%}
+        <td>Monthly Subscription</td>
+        {%elif payment[6]==4%}
+        <td>Session</td>
+        {%endif%}
+        {%if payment[5] is none%}
+        <td>{{payment[5]}}</td>
+        {%else%}
+        <td>{{payment[5].strftime("%d %B, %Y")}}</td>
+        {%endif%}
+    </tr>
+        
+    </tr>
+{% endfor %}
+</table>
+
+{%endif%}
+<!--stop timeperiod checkbox from resetting when submit -->
+<script>
+  
+   
+    const checkbox1 = document.getElementById("checkbox1");
+    const checkbox2 = document.getElementById("checkbox2");
+    const checkbox3 = document.getElementById("checkbox3");
+    // Check if the checkboxes are already checked in local storage
+    if (localStorage.getItem("checkbox1Checked") === "true") {
+      checkbox1.checked = true;
+    }
+    if (localStorage.getItem("checkbox2Checked") === "true") {
+      checkbox2.checked = true;
+    }
+
+    if (localStorage.getItem("checkbox3Checked") === "true") {
+      checkbox3.checked = true;
+    }
+
+    // Add event listeners to the checkboxes to save their values to local storage
+    checkbox1.addEventListener("change", function() {
+      localStorage.setItem("checkbox1Checked", this.checked);
+    });
+    checkbox2.addEventListener("change", function() {
+      localStorage.setItem("checkbox2Checked", this.checked);
+    });
+    checkbox3.addEventListener("change", function() {
+      localStorage.setItem("checkbox3Checked", this.checked);
+    });
+
+</script>
+
+{% endblock %}
+
+

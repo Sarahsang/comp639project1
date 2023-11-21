@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %} MemberHome {% endblock %}
+
+{% block content %}
+<div class="memberImg"> </div>
+<!-- openhours for members' homepage -->
+
+<div class="container">
+    <p class="openhours"> Our Open Hours</p>
+    <p class="hours"> Staffed Hours:</p>
+    <p class="hours"> 9am-7pm</p>
+    <p class="hours">Monday-Friday</p>
+    <p class="hours">Members 24/7 access out of these hours
+    
+    {% if popup == "true" %}
+    <div class="overlay_popup">
+        <div class="popup">
+            <p>{{ message }}</p>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
+    {% endif %}
+        
+</div>
+
+<script>
+    function closePopup() {
+        document.querySelector('.overlay_popup').style.display = 'none';
+    }
+</script>
+
+{% endblock %}

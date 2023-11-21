@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %} Join {% endblock %}
+
+{% block content %}
+{% if "admin" in request.url %}
+<div class="reusableContainer"  style="height:880px; padding-top: 20px; ">
+    <div class="member-update">
+        <!-- add personal information for new member -->
+        <h5>Personal Information</h5>
+    </div>
+    <!-- asterisk for required input -->
+    <!-- age restriction, members have to be more than 17 years old -->
+    <form  action= "/admin/addMemberComplete" method="post" onsubmit="return validateDOB()" required>
+        <input name="member"  value="member" type="hidden" ><br>
+        <!-- placeholders to give users hints -->
+        <label class="reusable-form-label" style="width: 150px;">First Name *</label>
+        <input class="reusable-form-input" name="first_name"  placeholder="Please type in first name" type="text" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Last Name * </label>
+        <input class="reusable-form-input" name="last_name"  placeholder="Please type in last name" type="text" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Email *</label>
+        <input class="reusable-form-input" name="email"  placeholder="xxxxxxx@gmail.com" type="email" maxlength="40" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Password *</label>
+        <input class="reusable-form-input" name="password"  placeholder="up to 12 characters, case sensitive" type="password" maxlength="12" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Gender *</label>
+        <!-- dropdown menu to minimize typo of users -->
+        <select class="reusable-form-input" name="gender" id="gender">
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+        </select><br>
+        <label class="reusable-form-label" style="width: 150px;">Date of Birth *</label>
+        <input class="reusable-form-input" name="date_of_birth" placeholder="****-**-**" type="date" min="1900-01-01" max="{{ date.today() - relativedelta(years=17) }}" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Phone Number *</label>
+        <input class="reusable-form-input" name="phone_number"  placeholder="Please type in phone number" type="text" maxlength="11" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Address *</label>
+        <input class="reusable-form-input" name="address"  placeholder="Please type in address" type="text" maxlength="50" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Desired Outcomes</label>
+        <input class="reusable-form-input" name="outcomes" id="outcomes" placeholder="get strong, body and mind" type="text" maxlength= "100" ><br> 
+        <div class="member-update">
+            <!-- health info for new member -->
+            <h5>Health Information</h5>
+        </div>
+        <label class="reusable-form-label" style="width: 150px;margin-top: 20px;">Weight(kg)</label>
+        <input class="reusable-form-input" name="weight"  placeholder="key in weight" type="number" min="20" max="999" step="0.1" oninput="if(value.length>5)value=value.slice(0,5);if(parseFloat(value)>999)value='999';"><br>
+        <label class="reusable-form-label" style="width: 150px;">BMI</label>
+        <input class="reusable-form-input" name="bmi"  placeholder="BMI=weight(kg)/heightxheight(m)" type="number" min="0" max="99" oninput="if(value.length>2)value=value.slice(0,2)" ><br>
+        <label class="reusable-form-label" style="width: 150px;">BP(mmHg)</label>
+        <input class="reusable-form-input" name="bp"  placeholder="blood pressure e.g. 120/80" type="text" maxlength="7" ><br>
+        <label class="reusable-form-label" style="width: 150px;">Comments</label>
+        <input class="reusable-form-input" name="comments"  placeholder="anything else you want to share with us"  type="text" maxlength= "100" ><br>
+        <button type="submit" class="reusableButton btn" style="margin-top:15px; background-color: #1D8FA8; ">submit</button>
+        <button type = "reset" class="reusableButton btn" style=" margin-top:15px; background-color: #1D8FA8; " onclick="location.reload()">Reset</button>
+        <button type = "button" class="reusableButton btn" style=" margin-top:15px; background-color: #1D8FA8; " onclick="history.back()">Back</button>
+    </form>
+</div>
+{% else %}
+<div class="reusableContainer"  style="height:880px; padding-top: 20px; ">
+    <div class="member-update">
+        <h5>Personal Information</h5>
+    </div>
+    <form  action= "/join/addMemberComplete" method="post"  onsubmit="return validateDOB()" required>
+        <input name="member"  value="member" type="hidden" ><br>
+        <label class="reusable-form-label" style="width: 150px;">First Name *</label>
+        <input class="reusable-form-input" name="first_name"  placeholder="Please type in first name" type="text" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Last Name * </label>
+        <input class="reusable-form-input" name="last_name"  placeholder="Please type in last name" type="text" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Email *</label>
+        <input class="reusable-form-input" name="email"  placeholder="xxxxxxx@gmail.com" type="email" maxlength="40" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Password *</label>
+        <input class="reusable-form-input" name="password"  placeholder="up to 12 characters, case sensitive" type="password" maxlength="12" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Gender *</label>
+        <select class="reusable-form-input" name="gender" id="gender">
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+        </select><br>
+        <label class="reusable-form-label" style="width: 150px;">Date of Birth *</label>
+        <input class="reusable-form-input" name="date_of_birth" placeholder="****-**-**" type="date" min="1900-01-01" max="{{ date.today() - relativedelta(years=17) }}" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Phone Number </label>
+        <input class="reusable-form-input" name="phone_number"  placeholder="phone_number" type="text" maxlength="11" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Address </label>
+        <input class="reusable-form-input" name="address"  placeholder="address" type="text" maxlength="50" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Desired Outcomes</label>
+        <input class="reusable-form-input" name="outcomes" id="outcomes" placeholder="get strong, body and mind" type="text" maxlength= "100"><br> 
+        <div class="member-update">
+            <h5>Health Information</h5>
+        </div>
+        <label class="reusable-form-label" style="width: 150px;margin-top: 20px;">Weight(kg)</label>
+        <input class="reusable-form-input" name="weight"  placeholder="key in weight" type="number" min="20" max="999" step="0.1" oninput="if(value.length>5)value=value.slice(0,5);if(parseFloat(value)>999)value='999';"><br>
+        <label class="reusable-form-label" style="width: 150px;">BMI</label>
+        <input class="reusable-form-input" name="bmi"  placeholder="BMI=weight(kg)/heightxheight(m)" type="number" min="0" max="99" oninput="if(value.length>2)value=value.slice(0,2)"><br>
+        <label class="reusable-form-label" style="width: 150px;">BP(mmHg)</label>
+        <input class="reusable-form-input" name="bp"  placeholder="blood pressure e.g. 120/80" type="text" maxlength="7"><br>
+        <label class="reusable-form-label" style="width: 150px;">Comments</label>
+        <input class="reusable-form-input" name="comments"  placeholder="anything else you want to share with us"  type="text" maxlength= "100"><br>
+        <button type = "reset" class="reusableButton btn" style=" margin-top:15px; background-color: #1D8FA8; " onclick="location.reload()">Reset</button>
+        <button type="submit" class="reusableButton btn" style="margin-top:15px; height:50px; background-color: #1D8FA8; ">Submit and Pay</button>
+        <button type = "button" class="reusableButton btn" style=" margin-top:15px; background-color: #1D8FA8; " onclick="history.back()">Back</button>
+    </form>
+</div>
+
+{% endif %}
+
+
+{% endblock %}

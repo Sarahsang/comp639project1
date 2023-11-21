@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %} Attendance Report {% endblock %}
+
+{% block content %}
+<div class="row " style="width:1000px; margin:20px auto;" >  
+    <div class="col-lg-4 reusableContainer" style="background-color:#6b6b69; height:150px; width:300px">
+    <!-- If search by member id, a form with POST method will pass data of memberid to /admin/member route-->
+    <form action="/admin/reports/attendance" method="POST">
+        <div class="row g-3"  >
+            <label class="form-label" style="margin-top:40px;">Search by ID</label>
+            <div class="col">
+                <input type="text" class="form-control me-2" name="memberid" placeholder="Member ID" required>
+            </div>
+            <div class="col">
+                <button type="submit" class="reusableButton">Search</button>
+            </div>
+        </div>
+    </form>
+    </div>
+    <div class="col-lg-4 reusableContainer" style="background-color:#6b6b69; height:150px; width:300px">
+    <!-- If search by name, a form with POST method will pass data of firstname and familyname to /admin/member route-->
+    <form action="/admin/reports/attendance" method="POST">
+        <div class="row g-3">
+            <label class="form-label" style="margin-top:40px;">Search by First Name or Last Name</label>
+            <div class="col">
+                <input type="text" class="form-control me-2" name="name" placeholder="Name" required>
+            </div>
+            <div class="col">
+                <button type="submit" class="reusableButton">Search</button>
+            </div>
+        </div>
+    </form>
+    </div>
+
+    <div class="col-lg-4 reusableContainer" style="background-color:#6b6b69; height:150px; width:300px">
+        <!-- If search by name, a form with POST method will pass data of firstname and familyname to /admin/member route-->
+        <form action="/admin/reports/attendance" method="POST">
+            <div class="row g-3">
+                <label class="form-label" style="margin-top:40px;">All Attendance</label>
+                <div class="col">
+                    <button type="submit" name="all" value="all" class="reusableButton">Go</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+<h2>
+    <p class="text-center" style="color: rgb(88, 70, 11);">Attendance</p>
+</h2>
+<!-- display attendance for all members -->
+{%if allAttendance%}
+    <table class="reusableTable" style="width:900px;margin:40px auto;padding: 20px;">
+        <tr><td>Name</td><td>Class</td><td>Day</td><td>Time Attended</td><tr>
+        {% for attendance in allAttendance %}
+        <tr>
+            <td>{{attendance[0]}} {{attendance[1]}}</td><td>{{attendance[2]}}</td><td>{{attendance[3]}}</td>
+            {%if attendance[5]==0 and attendance[4] is not none %}
+            <td>{{attendance[4].strftime("%d %B, %Y, %I:%M:%S")}}</td>
+            {%elif attendance[5]==1 and attendance[4] is none%}
+           <td>Cancelled</td>
+            {%else %}
+            <td>No Show</td>
+            {%endif%}   
+
+        </tr>
+        {% endfor %}
+    </table>
+
+<!-- display attendance summary by ID search -->
+{%elif attendanceById%}
+   <div style="width:80%; margin: 20px auto;text-align: center;font-size: 20px; background-color: #f1f1f1; box-shadow: #6b6b69; padding-top: 1.5rem;">
+    {% if attendanceByIdClassSummary[0] is none %}
+    <p>This member has not attended any class this month</p>
+    {% elif attendanceByIdClassSummary[0] ==1 %}
+    <p>This member has attended our classes for <span style="color:#1D8FA8; font-weight: bolder ;">{{attendanceByIdClassSummary[0]}}</span> time this month</p>
+    {%else%}
+    <p>This member has attended our classes for <span style="color:#1D8FA8; font-weight: bolder ;">{{attendanceByIdClassSummary[0]}}</span> times this month</p>
+    {%endif%}
+
+    {%if attendanceByIdSessionSummary[0] is none%}
+    <p>This member has not attended any private session this month</p>
+    {% elif  attendanceByIdSessionSummary[0] ==1 %}
+    <p>This member has attended our private sessions for <span style="color:#1D8FA8; font-weight: bolder ;">{{ attendanceByIdSessionSummary[0]}}</span> time this month</p>
+    {%else%}
+    <p>This member  has attended our Private Sessions for <span style="color:#1D8FA8; font-weight: bolder;" >{{attendanceByIdSessionSummary[0]}}</span> times this month</p>
+    {%endif%}
+
+    {%if attendanceByIdGymSummary[0] is none%}
+    <p>This member has not used our gym equipment this month</p>
+    {% elif attendanceByIdGymSummary[0] ==1 %}
+    <p>This member has used our gym equipment for<span style="color:#1D8FA8; font-weight: bolder ;">{{attendanceByIdGymSummary[0]}}</span> time this month</p>
+    {%else%}
+    <p>This member  has used our gym equipment for <span style="color:#1D8FA8; font-weight: bolder;" >{{attendanceByIdGymSummary[0]}}</span> times this month</p>
+    {%endif%}
+    </div>
+    <table class="reusableTable" style="width:900px;margin:40px auto;padding: 20px;">
+        <tr><td>Name</td><td>Class</td><td>Day</td><td>Time Attended</td><tr></tr>
+        {% for attendance in attendanceById %}
+        <tr>
+            <td>{{attendance[0]}}{{attendance[1]}}</td><td>{{attendance[2]}}</td><td>{{attendance[3]}}</td>
+            {%if attendance[5]==0 and attendance[4] is not none %}
+            <td>{{attendance[4].strftime("%d %B, %Y, %I:%M:%S")}}</td>
+            {%elif attendance[5]==1 and attendance[4] is none%}
+           <td>Cancelled</td>
+            {%else %}
+            <td>No Show</td>
+            {%endif%}     
+        </tr>
+        {% endfor %}
+    </table>
+<!-- display attendance summary by name search -->
+{%elif attendanceByName%}
+<div style="width:80%; margin: 20px auto;text-align: center;font-size: 20px; background-color: #f1f1f1; box-shadow: #6b6b69; padding-top: 1.5rem;">
+    {% if attendanceByNameClassSummary[0] is none %}
+    <p>This member has not attended any class this month</p>
+    {% elif attendanceByNameClassSummary[0] == 1%}
+    <p>This member has attended our classes for <span style="color:#1D8FA8; font-weight: bolder ;">{{ attendanceByNameClassSummary[0]}}</span> time this month</p>
+    {%else%}
+    <p>This member has attended our classes for <span style="color:#1D8FA8; font-weight: bolder ;">{{attendanceByNameClassSummary[0]}}</span> times this month</p>
+    {%endif%}
+
+    {%if attendanceByNameSessionSummary[0] is none%}
+    <p>This member has not attended any private session this month</p>
+    {% elif attendanceByNameSessionSummary[0] ==1%}
+    <p>This member has attended our private sessions for <span style="color:#1D8FA8; font-weight: bolder ;">{{attendanceByNameSessionSummary[0]}}</span> time this month</p>
+    {%else%}
+    <p>This member  has attended our Private Sessions for <span style="color:#1D8FA8; font-weight: bolder;" >{{attendanceByNameSessionSummary[0]}}</span> times this month</p>
+    {%endif%}
+
+    {%if attendanceByNameGymSummary[0] is none%}
+    <p>This member has not used our gym equipment this month</p>
+    {% elif attendanceByNameGymSummary[0] ==1%}
+    <p>This member has used our gym equipment for<span style="color:#1D8FA8; font-weight: bolder ;">{{attendanceByNameGymSummary[0]}}</span> time this month</p>
+    {%else%}
+    <p>This member  has used our gym equipment for <span style="color:#1D8FA8; font-weight: bolder;" >{{attendanceByNameGymSummary[0]}}</span> times this month</p>
+    {%endif%}
+</div>
+
+    <table class="reusableTable" style="width:900px;margin:40px auto;padding: 20px;">
+        <tr><td>Name</td><td>Class</td><td>Day</td><td>Time Attended</td><tr></tr>
+        {% for attendance in attendanceByName %}
+        <tr>
+            <td>{{attendance[0]}}{{attendance[1]}}</td><td>{{attendance[2]}}</td><td>{{attendance[3]}}</td>
+            {%if attendance[5]==0 and attendance[4] is not none %}
+            <td>{{attendance[4].strftime("%d %B, %Y, %I:%M:%S")}}</td>
+            {%elif attendance[5]==1 and attendance[4] is none%}
+           <td>Cancelled</td>
+            {%else %}
+            <td>No Show</td>
+            {%endif%}   
+        </tr>
+        {% endfor %}
+    </table>
+
+{%endif%}
+
+
+
+{% endblock %}

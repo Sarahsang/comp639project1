@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %} Member Profile {% endblock %}
+
+{% block content %}
+{% for mb in memberprofile %}
+<div class="profile-card card mb-3" style="max-width: 800px;">
+    <div class="row g-0">
+       <!-- provide default profile photos based on gender -->
+      <div class="profile-info col-md-4">
+        {% if mb[6] == "Female" %}
+        <img src="/static/profile-F.png" class="profile-image img-fluid" alt="member profile icon">   
+        {% else %}
+        <img src="/static/profile-M.png" class="profile-image img-fluid" alt="member profile icon">   
+        {% endif %}    
+    </div>
+
+    
+    <!-- Display member health information-->
+    <div class="health-info col-md-8">
+      <h5 class="card-title">Health Information</h5>
+      <p class="card-text">Weight: {{mb[11]}} kg</p>
+      <p class="card-text">BMI: {{mb[12]}}</p>
+      <p class="card-text">BP: {{mb[13]}} mmHg</p>
+      <p class="card-text">Comments: {{mb[14]}}</p>
+    </div>
+  
+    <!-- Display member personal information -->
+    <div class="profile-info col-md-4">
+      <div class="card-body">
+        <h5 class="card-title">{{mb[2]}} {{mb[3]}}</h5>
+        <p class="card-text">{{mb[6]}}</p>
+        <p class="card-text">DOB: {{date}}</p>
+        <p class="card-text">📞 {{mb[8]}}</p>
+        <p class="card-text">📩 {{mb[4]}}</p>         
+        <p class="card-text">🏠 {{mb[9]}}</p>
+    
+        </div>
+      </div>
+ 
+      
+  <!-- Display subscription status and due date-->
+  {% for sb in subscriptionDetail %}
+   <div class="sub-info col-md-8">
+   <div style="margin-bottom:40px;">
+    {% if mb[10] == 1 %}
+    <h5 class="card-text">Status: Active</h5>
+    {% elif mb[10] == 0 %}
+    <h5 class="card-text">Status: Inactive</h5>
+    {% else %}
+    <h5 class="card-text">NA</h5>
+    {% endif %} 
+   </div> 
+    <div style="margin-bottom:40px;">
+    <h5 class="card-title">Due Date: {{date_time}}</h5>
+    </div>
+   {% endfor %}
+   
+   <div class="profile-button">
+    <!-- Add Update, Back and Home buttons for admin -->
+   {% if admin %}
+   <a href="/admin/edit_memberprofile?id={{mb[0]}}" class="button-back btn"> Update </a>
+   <a href="{{ url_for('clickmember_admin') }}" class="button-back btn"> Back </a>
+   <a href="{{ url_for('adminHome') }}" class="button-back btn"> Home </a>
+  
+    <!-- Add Update, Back and Home buttons for member -->
+   {% elif member %}
+   <a href="/member/edit_memberprofile?id={{mb[0]}}" class="button-back btn"> Update </a>
+   <a href="{{ url_for('memberHome') }}" class="button-back btn"> Back </a>
+   <a href="{{ url_for('memberHome') }}" class="button-back btn"> Home </a>
+   
+    <!-- Only Back button permission for trainer -->
+   {% elif trainer %}
+   <button type = "button" class="button-back btn" onclick="history.back()">Back</button>
+   {% endif %}
+  
+  
+   </div>
+
+      </div>   
+    </div>
+    </div>
+  </div>
+  {% endfor %}
+
+{% endblock %}

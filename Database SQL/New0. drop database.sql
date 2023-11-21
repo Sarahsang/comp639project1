@@ -1,0 +1,21 @@
+drop view validbookingattendance;
+drop view sessionpaymenttransaction;
+drop view subscriptionpaymenttransaction;
+drop table newsletters;
+drop table datetable;
+drop table transaction;
+drop table transactiontype;
+drop table bookingattendance;
+drop table schedule;
+drop table class;
+drop table trainerqualification;
+drop table qualification;
+drop table memberhealth;
+drop table health;
+drop table account;
+drop table admin;
+drop table member;
+drop table trainer;
+drop table role;
+
+drop database gym_management;

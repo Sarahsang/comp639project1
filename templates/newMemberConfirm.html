@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %} Congratulations! {% endblock %}
+
+{% block content %}
+{% if "admin" in request.url %}
+<div class="reusableContainer" style="font-size:32px; display:flex; align-items: center;"> Congratulations! You have
+    successfully added a new member. The member number is {{newMember[0]}}.
+</div>
+<input class="reusableButton" type="button" value="Return" onclick="window.location.href='/adminHome'"></input>
+
+{% else %}
+<div class="reusableContainer" style="font-size:32px; display:flex; align-items: center;"> Congratulations! You are
+    now a new member of LUGym. Your subscription will be paid from your account on the first Thursday of every month. Please click below to login.</div>
+    <!-- <input class="reusableButton" type="button" value="Pay Subs" onclick="window.location.href='/newMember/pay'"></input> 
+Just holding this Login button as a space holder - need to force new member to pay first before they can login. -->
+<div style="margin:10px auto;">
+<input class="reusableButton" type="button" value="Login" onclick="window.location.href='/'"></input>
+</div>
+{% endif %}
+{% endblock %}

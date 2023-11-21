@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %} Member Profile {% endblock %}
+
+{% block content %}
+{% for mb in memberprofile %}
+<div class="reusableContainer"  style="height:850px; padding-top: 20px; ">
+    {% if admin %}   
+    <form  action= "/admin/edit_memberprofile" method="post">
+        <div class="member-update">
+            <!-- update personal information -->
+            <h5>Personal Information</h5>
+        </div>
+        
+        <input name="id"  value="{{mb[0]}}" type="hidden" ><br>
+        <label class="reusable-form-label" style="width: 150px;">First Name *</label>
+        <input class="reusable-form-input" name="first_name"  value="{{mb[2]}}" type="text" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Last Name *</label>
+        <input class="reusable-form-input" name="last_name"  value="{{mb[3]}}" type="text" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Email *</label>
+        <input class="reusable-form-input" name="email"  value="{{mb[4]}}" type="email" maxlength="40" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Password *</label>
+        <input type="text" class="reusable-form-input" name="password"  value="{{mb[5]}}" type="password" maxlength="12" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Gender *</label>
+         <!-- dropdown menu to minimize typo of users -->
+        <select class="reusable-form-input" name="gender">
+            <option value"{{mb[6]}}"=selected>{{mb[6]}}</option>
+            {% if mb[6] == "Female" %}
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+            {% elif mb[6] == "Male" %}
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+            {% elif mb[6] == "Other" %}
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            {% endif %}    
+        </select><br>
+        <label class="reusable-form-label" style="width: 150px;">Date of Birth *</label>
+         <!-- age restriction, members have to be more than 17 years old -->
+        <input type="text" class="reusable-form-input" name="date_of_birth" onfocus="(this.type='date')" value="{{mb[7]}}"  min="1900-01-01" max="{{ Date.today() - relativedelta(years=17) }}" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Phone Number *</label>
+        <input class="reusable-form-input" name="phone_number"  value="{{mb[8]}}" type="text" maxlength="11" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Address *</label>
+        <input class="reusable-form-input" name="address"  value="{{mb[9]}}" type="text" maxlength="50" required><br>
+
+        <div class="member-update">
+            <!-- update health information -->
+            <h5>Health Information</h5>
+        </div>
+
+        <label class="reusable-form-label" style="width: 150px;">Weight(kg)</label>
+        <input class="reusable-form-input" name="weight"  value="{{mb[11]}}" type="number" min="20" max="999" step="0.1" oninput="if(value.length>5)value=value.slice(0,5);if(parseFloat(value)>999)value='999';" ><br>
+        <label class="reusable-form-label" style="width: 150px;">BMI</label>
+        <input class="reusable-form-input" name="bmi"  value="{{mb[12]}}" type="number" min="0" max="99" step="0.1" oninput="if(value.length>4)value=value.slice(0,3)" ><br>
+        <label class="reusable-form-label" style="width: 150px;">BP(mmHg)</label>
+        <input class="reusable-form-input" name="bp"  value="{{mb[13]}}" type="text" maxlength="7"><br>
+        <label class="reusable-form-label" style="width: 150px;">Comments</label>
+        <input class="reusable-form-input" name="comments"  value="{{mb[14]}}" type="text" maxlength= "100" ><br>
+        <button type="submit" class="reusableButton btn" style="margin-top:30px; background-color: #1D8FA8; ">submit</button>
+        <!-- add reset button -->
+        <button type = "reset" class="reusableButton btn" style=" margin-top:30px; background-color: #1D8FA8; " onclick="location.reload()">Reset</button>
+        <!-- add back button -->
+        <button type = "button" class="reusableButton btn" style=" margin-top:30px; background-color: #1D8FA8; " onclick="history.back()">Back</button>
+    </form>
+
+    {% elif member %}
+    <form  class="member-update" action= "/member/edit_memberprofile" method="post">
+       
+        <div class="member-update">
+            <!-- update personal information -->
+            <h5>Personal Information</h5>
+        </div>
+
+        <input name="id"  value="{{mb[0]}}" type="hidden" ><br>
+        <label class="reusable-form-label" style="width: 150px;">First Name *</label>
+        <input class="reusable-form-input" name="first_name"  value="{{mb[2]}}" type="text"><br>
+        <label class="reusable-form-label" style="width: 150px;">Last Name *</label>
+        <input class="reusable-form-input" name="last_name"  value="{{mb[3]}}" type="text"><br>
+        <label class="reusable-form-label" style="width: 150px;">Email *</label>
+        <input class="reusable-form-input" name="email"  value="{{mb[4]}}" type="email" maxlength="40" required ><br>
+        <label class="reusable-form-label" style="width: 150px;">Password *</label>
+        <input class="reusable-form-input" name="password"  value="{{mb[5]}}" type="password" maxlength="12" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Gender *</label>
+        <!-- dropdown menu to minimize typo of users -->
+        <select class="reusable-form-input" name="gender">
+            <option value="{{mb[6]}}"selected>{{mb[6]}}</option>
+            {% if mb[6] == "Female" %}
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+            {% elif mb[6] == "Male" %}
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+            {% elif mb[6] == "Other" %}
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            {% endif %}    
+        </select><br>
+        <label class="reusable-form-label" style="width: 150px;">Date of Birth *</label>
+         <!-- age restriction, members have to be more than 17 years old -->
+        <input type="text" class="reusable-form-input" name="date_of_birth" onfocus="(this.type='date')" min="1900-01-01" value="{{mb[7]}}" max="{{ Date.today() - relativedelta(years=17) }}" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Phone Number *</label>
+        <input class="reusable-form-input" name="phone_number"  value="{{mb[8]}}" type="text" maxlength="11" required><br>
+        <label class="reusable-form-label" style="width: 150px;">Address *</label>
+        <input class="reusable-form-input" name="address"  value="{{mb[9]}}" type="text" maxlength="50" required><br>
+
+        <div class="member-update">
+            <!-- update health information -->
+            <h5>Health Information</h5>
+        </div>
+        <label class="reusable-form-label" style="width: 150px;">Weight(kg)</label>
+        <input class="reusable-form-input" name="weight"  value="{{mb[11]}}" type="number" min="20" max="999" step="0.1" oninput="if(value.length>5)value=value.slice(0,5);if(parseFloat(value)>999)value='999';"><br>
+        <label class="reusable-form-label" style="width: 150px;">BMI</label>
+        <input class="reusable-form-input" name="bmi"  value="{{mb[12]}}" type="number" min="0" max="99" step="0.1" oninput="if(value.length>4)value=value.slice(0,3)"  ><br>
+        <label class="reusable-form-label" style="width: 150px;">BP(mmHg)</label>
+        <input class="reusable-form-input" name="bp"  value="{{mb[13]}}" type="text" maxlength="7" ><br>
+        <label class="reusable-form-label" style="width: 150px;">Comments</label>
+        <input class="reusable-form-input" name="comments"  value="{{mb[14]}}" type="text" maxlength= "100" ><br>
+
+        <button type="submit" class="reusableButton btn" style="margin-top:30px; background-color: #1D8FA8; ">submit</button>
+        <!-- add reset button -->
+        <button type = "reset" class="reusableButton btn" style=" margin-top:30px; background-color: #1D8FA8; " onclick="location.reload()">Reset</button>
+        <!-- add back button -->
+        <button type = "button" class="reusableButton btn" style=" margin-top:30px; background-color: #1D8FA8; " onclick="history.back()">Back</button>
+    </form>
+    {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

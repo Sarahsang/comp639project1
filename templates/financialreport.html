@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %} Financial Report {% endblock %}
+
+{% block content %}
+    <style>
+        body {
+        background-color: #f2f2f2;
+    }
+    </style>
+
+    <style>
+        .logo-container {
+            background-color: #ffffff;
+            text-align: center;
+            padding: 10px 0;
+        }
+        
+        .logo {
+            max-width: 30%;
+            height: auto;
+            display: inline-block;
+            margin: 10px auto;
+        }
+    </style>
+
+    </head>
+
+    <body>
+        
+        <br>
+        <div class="btn_year_container">
+            <button hidden class="btn_year" value="2021" onclick="window.location.href='?fyear=2021';">2021</button>
+            <button class="btn_year" value="2022" selected onclick="window.location.href='?fyear=2022';">2022</button>
+            <button class="btn_year" value="2023" onclick="window.location.href='?fyear=2023';">2023</button>
+            <button hidden class="btn_year" value="2024" onclick="window.location.href='?fyear=2024';">2024</button>
+        </div>
+        <br>
+
+        <h2><div class="financial_report_title">Gym Financial Report {{year}}</div></h2>
+        <br><br>
+        <div class="table-responsive shadow p-3 mb-5 bg-white rounded">
+            <table class="table table-hover">
+                <tr><th style="width: 20%;">{{year}}*</th><th style="width: 16%;">Total</th><th style="width: 16%;">Q1</th><th style="width: 16%;">Q2</th><th style="width: 16%;">Q3</th><th style="width: 16%;">Q4</th></tr>
+                <tr>
+                    <td>Active Subscriptions *</td>
+                    {% if year == currentyear %}
+                        {% for q in report_subscriptioncount_quarter_currentyear %}
+                            <td>{{q[2]}}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for q in report_subscriptioncount_quarter %}
+                            <td>{{q[2]}}</td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>New Contract</td>
+                    {% for q in report_newcontract_quarter %}
+                        <td class="text-success">{{q[2]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Expired Contract</td>
+                    {% for q in report_expirecontract_quarter %}
+                        <td class="text-danger">{{q[2]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Subscription Income</td>
+                    {% for q in report_subscriptiondollar_quarter %}
+                        <td class="dollar">${{q[2]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Session Income</td>
+                    {% for q in report_sessiondollar_quarter %}
+                        <td class="dollar">${{q[2]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Refund</td>
+                    {% for q in report_refund_quarter %}
+                        <td class="dollar text-danger">${{q[2]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="fs-5 fw-bold">Total</td>
+                    {% for q in report_total_quarter %}
+                        <td class="dollar fs-5 fw-bold">${{q[2]}}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+        <div class="note">1. Financial Year of Lincoln GYM is Calendar Year. From 1st January to 31st December.</div>
+        <div class="note">2. Active Subscriptions on the Quarter and Year report is an average number per month.</div>
+        <br>
+        <br>
+        <div class="table-responsive shadow p-3 mb-5 bg-white rounded">
+            <table class="table table-hover">
+                <tr><th style="width: 20%;">{{year}}</th><th style="width: 6.7%;">Jan</th><th style="width: 6.7%;">Feb</th><th style="width: 6.7%;">Mar</th><th style="width: 6.7%;">Apr</th><th style="width: 6.7%;">May</th><th style="width: 6.7%;">Jun</th><th style="width: 6.7%;">Jul</th><th style="width: 6.7%;">Aug</th><th style="width: 6.6%;">Sep</th><th style="width: 6.6%;">Oct</th><th style="width: 6.6%;">Nov</th><th style="width: 6.6%;">Dec</th></tr>
+                <tr>
+                    <td>Active Subscriptions</td>
+                    {% for m in report_subscriptioncount_month %}
+                        <td>{{m[3]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>New Contract</td>
+                    {% for m in report_newcontract_month %}
+                        <td class="text-success">{{m[3]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Expired Contract</td>
+                    {% for m in report_expirecontract_month %}
+                        <td class="text-danger">{{m[3]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Subscription Income</td>
+                    {% for m in report_subscriptiondollar_month %}
+                        <td class="dollar">${{m[3]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Session Income</td>
+                    {% for m in report_sessiondollar_month %}
+                        <td class="dollar">${{m[3]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Refund</td>
+                    {% for q in report_refund_month %}
+                        <td class="dollar text-danger">${{q[3]}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="fs-5 fw-bold">Total</td>
+                    {% for q in report_total_month %}
+                        <td class="dollar fs-5 fw-bold">${{q[3]}}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+
+       
+
+    </body>
+
+{% endblock %}

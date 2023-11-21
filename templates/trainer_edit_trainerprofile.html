@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %} Trainer Profile {% endblock title %}
+
+{% block content %}
+<h2>
+    <p class="text-center" style="color: rgb(110, 88, 14); margin-top:50px; ">Edit Trainer Profile</p>
+</h2>
+<!-- Container for the form -->
+<div class="reusableContainer" style="height:500px; padding-top: 20px; ">
+    <!-- Form for editing trainer profile -->
+    <form action="/trainer/edit_trainerprofile" method="post" required>
+        <input name="id" value="{{trainerprofile[0]}}" type="hidden"><br>
+        <label class="reusable-form-label" style="width: 150px;">First Name *</label>
+        <input class="reusable-form-input" name="first_name" id="first_name" value="{{trainerprofile[1]}}" type="text"
+            required><br>
+        <label class="reusable-form-label" style="width: 150px;">Last Name *</label>
+        <input class="reusable-form-input" name="last_name" id="last_name" value="{{trainerprofile[2]}}" type="text"
+            required><br>
+        <label class="reusable-form-label" style="width: 150px;">Email *</label>
+        <input class="reusable-form-input" name="email" id="email" value="{{trainerprofile[5]}}" type="email"
+            required><br>
+        <label class="reusable-form-label" style="width: 150px;">Phone Number *</label>
+        <input class="reusable-form-input" name="phone_number" id="phone_number" value="{{trainerprofile[6]}}"
+            type="text" required><br>
+        <!-- Current Qualifications input -->
+        <!-- <label class="reusable-form-label" style="width: 150px; ">Current Qualifications </label>
+        <textarea class="reusable-form-input textarea" style="width:300px; height:70px; " name="qualification" id="qualification"
+                type="text" required>{{trainerprofile[3]}}</textarea><br> -->
+        <!-- Available Qualifications dropdown -->
+        <label class="reusable-form-label" style="width: 150px;">To update multiple qualifications Press Ctrl (Windows) or Command (Mac) and select</label>
+        <select class="reusable-form-input" multiple name="qualification_id" id="qualification_id"
+            style="width: 300px; height: 160px;">
+        <!-- Loop through qualifications and display them as options -->
+        {% for qualification in qualifications %}
+            {% if qualification[0] in selected_qualifications %}
+            <option value="{{ qualification[0] }}" selected>{{ qualification[1] }}</option>
+            {% else %}
+            <option value="{{ qualification[0] }}">{{ qualification[1] }}</option>
+            {% endif %}
+        {% endfor %}
+        </select><br>
+        <!-- Submit button -->
+         <button type="submit" class="reusableButton"
+                style="margin-top:20px; background-color: #1D8FA8; ">Submit</button>
+        <!-- Back to Profile button -->
+            <a class="reusableButton" style="width: 150px; margin-top:20px; background-color: #1D8FA8; padding: 1.5mm; "
+                href="{{ url_for('clicktrainerprofile_trainer', id=trainerprofile[0]) }}">Back to Profile</a>
+    </form>
+
+</div>
+
+{% endblock %}
+
+<style>.textarea{height:auto;min-height:100px;max-height:300px;overflow-y:scroll;}</style>
+

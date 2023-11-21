@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %} News {% endblock %}
+
+{% block content %}
+<!-- display latest newsletter for member -->
+<div class="reusableContainer"  style="height:350px; width:650px;padding-top: 20px; ">
+        <div class="news-body" style="height:250px;">
+          <h3 class="news-title">{{membernews[1]}}</h3>
+          <p class="news-text">{{membernews[2]}}</p>
+          <p class="news-time" style="text-align:right; padding-right:40px;">{{membernews[3]}}</p>
+        </div>
+
+        <button type = "button" class="button-back btn " onclick="history.back()">Back</button>
+
+</div>
+
+{% endblock %}
